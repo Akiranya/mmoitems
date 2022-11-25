@@ -69,7 +69,7 @@ public class CircularLuteAttack implements LuteAttackHandler {
 
                     for (Entity target : entities)
                         if (UtilityMethods.canTarget(caster.getPlayer(), loc, target, InteractionType.OFFENSE_ACTION)) {
-                            caster.attack((LivingEntity) target, damage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+                            caster.attack((LivingEntity) target, damage, DamageType.WEAPON, DamageType.MAGIC);
                             cancel();
                             return;
                         }

@@ -89,7 +89,7 @@ public class Lute extends UntargetedWeapon {
 
 					for (Entity target : entities)
 						if (UtilityMethods.canTarget(getPlayer(), loc, target, InteractionType.OFFENSE_ACTION)) {
-							stats.attack((LivingEntity) target, attackDamage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+							stats.attack((LivingEntity) target, attackDamage, DamageType.WEAPON, DamageType.MAGIC);
 							cancel();
 							return;
 						}

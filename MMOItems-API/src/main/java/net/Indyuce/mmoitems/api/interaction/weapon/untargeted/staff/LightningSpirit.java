@@ -19,7 +19,7 @@ public class LightningSpirit implements StaffAttackHandler {
         RayTrace trace = new RayTrace(caster.getPlayer(), slot, range, entity -> UtilityMethods.canTarget(caster.getPlayer(), entity, InteractionType.OFFENSE_ACTION));
 
         if (trace.hasHit())
-            caster.attack(trace.getHit(), damage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+            caster.attack(trace.getHit(), damage, DamageType.WEAPON, DamageType.MAGIC);
         trace.draw(.5, loc1 -> loc1.getWorld().spawnParticle(Particle.FIREWORKS_SPARK, loc1, 0));
     }
 }

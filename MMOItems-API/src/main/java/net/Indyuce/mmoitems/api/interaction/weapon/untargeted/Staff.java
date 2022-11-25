@@ -43,7 +43,7 @@ public class Staff extends UntargetedWeapon {
 
         RayTrace trace = new RayTrace(stats.getPlayer(), slot, range, entity -> UtilityMethods.canTarget(stats.getPlayer(), entity, InteractionType.OFFENSE_ACTION));
         if (trace.hasHit())
-            stats.attack(trace.getHit(), attackDamage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+            stats.attack(trace.getHit(), attackDamage, DamageType.WEAPON, DamageType.MAGIC);
         trace.draw(.5, tick -> tick.getWorld().spawnParticle(Particle.EXPLOSION_NORMAL, tick, 0, .1, .1, .1, 0));
         getPlayer().getWorld().playSound(getPlayer().getLocation(), VersionSound.ENTITY_FIREWORK_ROCKET_TWINKLE.toSound(), 2, 2);
 

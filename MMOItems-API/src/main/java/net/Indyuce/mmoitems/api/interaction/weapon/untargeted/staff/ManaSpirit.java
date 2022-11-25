@@ -50,7 +50,7 @@ public class ManaSpirit implements StaffAttackHandler {
                     }
                     for (Entity target : targets)
                         if (UtilityMethods.canTarget(caster.getPlayer(), loc, target, InteractionType.OFFENSE_ACTION)) {
-                            caster.attack((LivingEntity) target, damage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+                            caster.attack((LivingEntity) target, damage, DamageType.WEAPON, DamageType.MAGIC);
                             loc.getWorld().spawnParticle(Particle.EXPLOSION_LARGE, loc, 0);
                             cancel();
                             return;

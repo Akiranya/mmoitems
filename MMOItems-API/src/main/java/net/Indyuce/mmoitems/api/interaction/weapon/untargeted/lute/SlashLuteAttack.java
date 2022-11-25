@@ -62,6 +62,6 @@ public class SlashLuteAttack implements LuteAttackHandler {
             if (entity.getLocation().distanceSquared(caster.getPlayer().getLocation()) < 40
                     && caster.getPlayer().getEyeLocation().getDirection().angle(entity.getLocation().toVector().subtract(caster.getPlayer().getLocation().toVector())) < Math.PI / 6
                     && UtilityMethods.canTarget(caster.getPlayer(), entity, InteractionType.OFFENSE_ACTION))
-                caster.attack((LivingEntity) entity, damage, DamageType.WEAPON, DamageType.MAGIC, DamageType.PROJECTILE);
+                caster.attack((LivingEntity) entity, damage, DamageType.WEAPON, DamageType.MAGIC);
     }
 }
