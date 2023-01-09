@@ -1,7 +1,8 @@
 package net.Indyuce.mmoitems.api;
 
 import io.lumine.mythic.lib.UtilityMethods;
-import io.lumine.mythic.lib.comp.target.InteractionType;
+
+import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.damage.AttackMetadata;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.version.VersionSound;
@@ -42,7 +43,7 @@ public enum TypeSet {
             if (entity.getLocation().distanceSquared(loc) < 40
                     && attack.getPlayer().getEyeLocation().getDirection()
                     .angle(entity.getLocation().subtract(attack.getPlayer().getLocation()).toVector()) < Math.PI / 3
-                    && UtilityMethods.canTarget(attack.getPlayer(), entity, InteractionType.OFFENSE_ACTION) && !entity.equals(target))
+                && UtilityMethods.canTarget(attack.getPlayer(), entity, InteractionType.OFFENSE_ACTION) && !entity.equals(target))
                 attack.attack((LivingEntity) entity, attack.getDamage().getDamage() * .4, DamageType.WEAPON, DamageType.PHYSICAL);
     }),
 

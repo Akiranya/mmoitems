@@ -2,7 +2,8 @@ package net.Indyuce.mmoitems.api.interaction.weapon.untargeted.lute;
 
 import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.item.NBTItem;
-import io.lumine.mythic.lib.comp.target.InteractionType;
+
+import io.lumine.mythic.lib.comp.interaction.InteractionType;
 import io.lumine.mythic.lib.damage.DamageType;
 import io.lumine.mythic.lib.player.PlayerMetadata;
 import net.Indyuce.mmoitems.MMOItems;
@@ -16,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public class CircularLuteAttack implements LuteAttackHandler {
