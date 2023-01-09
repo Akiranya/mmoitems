@@ -29,10 +29,7 @@ import net.Indyuce.mmoitems.comp.mmocore.MMOCoreMMOLoader;
 import net.Indyuce.mmoitems.comp.mmoinventory.MMOInventorySupport;
 import net.Indyuce.mmoitems.comp.mythicmobs.LootsplosionListener;
 import net.Indyuce.mmoitems.comp.mythicmobs.MythicMobsCompatibility;
-import net.Indyuce.mmoitems.comp.parse.StringInputParser;
-import net.Indyuce.mmoitems.comp.parse.placeholders.DefaultPlaceholderParser;
-import net.Indyuce.mmoitems.comp.parse.placeholders.PlaceholderAPIParser;
-import net.Indyuce.mmoitems.comp.parse.placeholders.PlaceholderParser;
+import net.Indyuce.mmoitems.comp.placeholders.MMOItemsPlaceholders;
 import net.Indyuce.mmoitems.comp.rpg.DefaultHook;
 import net.Indyuce.mmoitems.comp.rpg.HeroesHook;
 import net.Indyuce.mmoitems.comp.rpg.McMMOHook;
@@ -63,9 +60,6 @@ import java.util.logging.Level;
 public class MMOItems extends JavaPlugin {
     public static MMOItems plugin;
 
-    // Increment this when making breaking changes to items.
-    public static final int INTERNAL_REVISION_ID = 1;
-
     private final PluginUpdateManager pluginUpdateManager = new PluginUpdateManager();
     private final CraftingManager stationRecipeManager = new CraftingManager();
     private final LoreFormatManager formatManager = new LoreFormatManager();
@@ -77,8 +71,6 @@ public class MMOItems extends JavaPlugin {
     private final TypeManager typeManager = new TypeManager();
     private final ItemManager itemManager = new ItemManager();
     private final PlayerInventoryHandler inventory = new PlayerInventoryHandler();
-    @Deprecated
-    private final List<StringInputParser> stringInputParsers = new ArrayList<>();
     private final List<EnchantPlugin<? extends Enchantment>> enchantPlugins = new ArrayList<>();
     private final StatManager statManager = new StatManager();
 
@@ -90,8 +82,6 @@ public class MMOItems extends JavaPlugin {
     private TierManager tierManager;
     private SetManager setManager;
 
-    @Deprecated
-    private PlaceholderParser placeholderParser = new DefaultPlaceholderParser();
     private VaultSupport vaultSupport;
     private RPGHandler rpgPlugin;
 
@@ -215,17 +205,17 @@ public class MMOItems extends JavaPlugin {
         PluginUtils.isDependencyPresent("mcMMO", unused -> Bukkit.getPluginManager().registerEvents(new McMMONonRPGHook(), this));
 
         /*
-         * Registers Player Inventories. Each of these add locations of items to search for
-         * when doing inventory updates.
+         * Registers Player Inventories. Each of these add locations
+         * of items to search for when doing inventory updates.
          */
         getInventory().register(new DefaultPlayerInventory());
         PluginUtils.hookDependencyIfPresent("RPGInventory", unused -> getInventory().register(new RPGInventoryHook()));
-        PluginUtils.hookDependencyIfPresent("CrazyEnchantments", unused -> getStats().register(new CrazyEnchantsStat()));
-        PluginUtils.hookDependencyIfPresent("AdvancedEnchantments", unused -> Bukkit.getPluginManager().registerEvents(new AdvancedEnchantmentsHook(), this));
-        PluginUtils.hookDependencyIfPresent("PlaceholderAPI", unused -> placeholderParser = new PlaceholderAPIParser());
         if (MMOItems.plugin.getConfig().getBoolean("iterate-whole-inventory"))
             getInventory().register(new OrnamentPlayerInventory());
 
+        PluginUtils.hookDependencyIfPresent("CrazyEnchantments", unused -> getStats().register(new CrazyEnchantsStat()));
+        PluginUtils.hookDependencyIfPresent("AdvancedEnchantments", unused -> Bukkit.getPluginManager().registerEvents(new AdvancedEnchantmentsHook(), this));
+        PluginUtils.hookDependencyIfPresent("PlaceholderAPI", unused -> new MMOItemsPlaceholders().register());
 
         if (Bukkit.getPluginManager().getPlugin("BossShopPro") != null) {
             getLogger().log(Level.INFO, "Hooked onto BossShopPro");
@@ -476,11 +466,6 @@ public class MMOItems extends JavaPlugin {
         return upgradeManager;
     }
 
-    @Deprecated
-    public PlaceholderParser getPlaceholderParser() {
-        return placeholderParser;
-    }
-
     public TemplateManager getTemplates() {
         return templateManager;
     }
@@ -511,14 +496,6 @@ public class MMOItems extends JavaPlugin {
 
     public VaultSupport getVault() {
         return vaultSupport;
-    }
-
-    /**
-     * @deprecated Not used
-     */
-    @Deprecated
-    public List<StringInputParser> getStringInputParsers() {
-        return stringInputParsers;
     }
 
     //region Easy-Access API

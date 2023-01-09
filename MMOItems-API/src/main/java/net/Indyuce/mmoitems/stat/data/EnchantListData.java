@@ -1,7 +1,6 @@
 package net.Indyuce.mmoitems.stat.data;
 
 import net.Indyuce.mmoitems.ItemStats;
-import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.item.mmoitem.MMOItem;
 import net.Indyuce.mmoitems.stat.data.type.Mergeable;
 import net.Indyuce.mmoitems.stat.data.type.StatData;
@@ -30,7 +29,7 @@ public class EnchantListData implements StatData, Mergeable {
     public void addEnchant(Enchantment enchant, int level) {
 
 		// Ignore lvl 0 enchants :wazowskibruhmoment:
-        if (level == 0) { enchants.remove(enchant); } else { enchants.put(enchant, level);}
+        if (level <= 0) { enchants.remove(enchant); } else { enchants.put(enchant, level);}
     }
 
 	public void clear() { enchants.clear(); }
@@ -50,28 +49,10 @@ public class EnchantListData implements StatData, Mergeable {
 	@Override
 	public void merge(StatData data) {
 		Validate.isTrue(data instanceof EnchantListData, "Cannot merge two different stat data types");
-		boolean additiveMerge = MMOItems.plugin.getConfig().getBoolean("stat-merging.additive-enchantments", false);
 
-		for (Enchantment enchant : ((EnchantListData) data).getEnchants()) {
-			if (additiveMerge) {
-
-				// Additive
-				enchants.put(enchant, ((EnchantListData) data).getLevel(enchant) + enchants.getOrDefault(enchant, 0));
-			} else {
-
-				// Max Enchantment
-				addEnchant(enchant,
-
-						// Does this one already have the enchant?
-						enchants.containsKey(enchant) ?
-
-								// Use the better of the two
-								Math.max(((EnchantListData) data).getLevel(enchant), enchants.get(enchant)) :
-
-								// No enchant yet, just copy over
-								((EnchantListData) data).getLevel(enchant));
-			}
-		}
+		final EnchantListData enchantList = (EnchantListData) data;
+		for (Enchantment enchant : enchantList.getEnchants())
+			addEnchant(enchant, Math.max(enchants.getOrDefault(enchant, 0), enchantList.getLevel(enchant)));
 	}
 
 	@Override
