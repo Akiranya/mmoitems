@@ -173,9 +173,11 @@ public class MMOItems extends JavaPlugin {
 
         PluginUtils.hookDependencyIfPresent("Vault", u -> vaultSupport = new VaultSupport());
 
-        getLogger().log(Level.INFO, "Loading crafting stations, please wait..");
-        layoutManager.reload();
-        stationRecipeManager.reload();
+        getServer().getScheduler().runTask(this, () -> {
+            getLogger().log(Level.INFO, "Loading crafting stations, please wait..");
+            layoutManager.reload();
+            stationRecipeManager.reload();
+        });
 
         // This ones are not implementing Reloadable
         NumericStatFormula.reload();
