@@ -286,11 +286,11 @@ public class TemplateManager implements Reloadable {
 	public void reload() {
 		templates.clear();
 		modifiers.clear();
+		modifierSets.clear();
 
 		FriendlyFeedbackProvider ffp = new FriendlyFeedbackProvider(FFPMMOItems.get());
 		ffp.activatePrefix(true, "Item Templates");
 		ffp.log(FriendlyFeedbackCategory.INFORMATION, "Loading template modifiers, please wait..");
-
 		for (File file : new File(MMOItems.plugin.getDataFolder() + "/modifiers").listFiles()) {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 			ffp.activatePrefix(true, "Item Templates \u00a78($r" + file.getPath() + "\u00a78)");
@@ -298,9 +298,9 @@ public class TemplateManager implements Reloadable {
 				try {
 					TemplateModifier modifier = new TemplateModifier(config.getConfigurationSection(key));
 					modifiers.put(modifier.getId(), modifier);
+					String setId = FilenameUtils.getBaseName(file.getName());
+					modifierSets.computeIfAbsent(setId, k -> new ArrayList<>()).add(modifier);
 				} catch (IllegalArgumentException exception) {
-
-					// Log
 					ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load template modifier '" + key + "': " + exception.getMessage());
 				}
 		}
@@ -315,10 +315,7 @@ public class TemplateManager implements Reloadable {
 					MMOItemTemplate template = new MMOItemTemplate(type, config.getConfigurationSection(key));
 					template.postLoad();
 					registerTemplate(template);
-
 				} catch (IllegalArgumentException exception) {
-
-					// Log
 					ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load item template '" + key + "': " + exception.getMessage());
 				}
 		}
