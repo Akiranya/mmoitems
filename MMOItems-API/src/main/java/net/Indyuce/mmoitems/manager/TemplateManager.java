@@ -11,6 +11,7 @@ import net.Indyuce.mmoitems.api.item.template.TemplateModifier;
 import net.Indyuce.mmoitems.api.util.TemplateMap;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import net.Indyuce.mmoitems.api.util.message.FFPMMOItems;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -33,6 +34,12 @@ public class TemplateManager implements Reloadable {
 	 * to make item generation easier.
 	 */
 	private final Map<String, TemplateModifier> modifiers = new HashMap<>();
+
+	/*
+	 * bank of (id -> modifier list) so the item config can easily write an id
+	 * to reference a list of predefined modifiers.
+	 * */
+	private final Map<String, List<TemplateModifier>> modifierSets = new HashMap<>();
 
 	private static final Random random = new Random();
 
@@ -181,6 +188,8 @@ public class TemplateManager implements Reloadable {
 
 	public Collection<TemplateModifier> getModifiers() { return modifiers.values(); }
 
+	public List<TemplateModifier> getModifierSet(String id) { return modifierSets.get(id); }
+
 	public ItemTier rollTier() {
 
 		double s = 0;
@@ -246,6 +255,8 @@ public class TemplateManager implements Reloadable {
 				try {
 					TemplateModifier modifier = new TemplateModifier(config.getConfigurationSection(key));
 					modifiers.put(modifier.getId(), modifier);
+					String setId = FilenameUtils.getBaseName(file.getName());
+					modifierSets.computeIfAbsent(setId, k -> new ArrayList<>()).add(modifier);
 				} catch (IllegalArgumentException exception) {
 					ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load template modifier '" + key + "': " + exception.getMessage());
 				}

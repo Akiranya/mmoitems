@@ -74,17 +74,24 @@ public class MMOItemTemplate extends PostLoadObject implements ItemReference {
 				if (config.getBoolean("option." + option.name().toLowerCase().replace("_", "-")))
 					options.add(option);
 
-		if (config.contains("modifiers"))
-			for (String key : config.getConfigurationSection("modifiers").getKeys(false))
-				try {
-					TemplateModifier modifier = new TemplateModifier(MMOItems.plugin.getTemplates(),
-							config.getConfigurationSection("modifiers." + key));
-					modifiers.put(modifier.getId(), modifier);
-				} catch (IllegalArgumentException exception) {
-
-					// Log
-					ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load modifier '$f{0}$b': {1}", key, exception.getMessage());
+		if (config.contains("modifiers")) {
+			if (config.isConfigurationSection("modifiers")) { // Read it as many independent modifiers
+				for (String key : config.getConfigurationSection("modifiers").getKeys(false))
+					try {
+						TemplateModifier modifier = new TemplateModifier(MMOItems.plugin.getTemplates(), config.getConfigurationSection("modifiers." + key));
+						modifiers.put(modifier.getId(), modifier);
+					} catch (IllegalArgumentException exception) {
+						ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load modifier '$f{0}$b': {1}", key, exception.getMessage());
+					}
+			} else if (config.isList("modifiers")) { // Read it from the loaded modifier sets
+				for (final String id : config.getStringList("modifiers")) {
+					for (TemplateModifier mod : MMOItems.plugin.getTemplates().getModifierSet(id))
+						modifiers.put(mod.getId(), mod);
 				}
+			} else { // Unknown format
+				ffp.log(FriendlyFeedbackCategory.INFORMATION, "Could not load modifier for item: {0}", id);
+			}
+		}
 
 		Validate.notNull(config.getConfigurationSection("base"), FriendlyFeedbackProvider.quickForConsole(FFPMMOItems.get(),"Could not find base item data"));
 		for (String key : config.getConfigurationSection("base").getKeys(false))
