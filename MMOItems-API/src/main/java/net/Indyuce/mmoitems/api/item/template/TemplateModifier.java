@@ -23,7 +23,7 @@ public class TemplateModifier {
 	private final String id;
 
 	private final double chance, weight;
-	private final Map<ItemStat, RandomStatData> data;
+	private final Map<ItemStat<?, ?>, RandomStatData<?>> data;
 	private final NameModifier nameModifier;
 
 	private static final Random random = new Random();
@@ -77,7 +77,7 @@ public class TemplateModifier {
 				String id = key.toUpperCase().replace("-", "_");
 				Validate.isTrue(MMOItems.plugin.getStats().has(id), "Could not find stat with ID '" + id + "'");
 
-				ItemStat stat = MMOItems.plugin.getStats().get(id);
+				ItemStat<?, ?> stat = MMOItems.plugin.getStats().get(id);
 				data.put(stat, stat.whenInitialized(config.get("stats." + key)));
 			} catch (IllegalArgumentException exception) {
 
@@ -95,7 +95,7 @@ public class TemplateModifier {
 		return weight;
 	}
 
-	public Map<ItemStat, RandomStatData> getItemData() {
+	public Map<ItemStat<?, ?>, RandomStatData<?>> getItemData() {
 		return data;
 	}
 

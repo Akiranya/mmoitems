@@ -81,7 +81,7 @@ public class MMOItemBuilder {
                     addModifier(modifier.getNameModifier(), modUUID);
                 }
 
-                for (ItemStat stat : modifier.getItemData().keySet())
+                for (ItemStat<?, ?> stat : modifier.getItemData().keySet())
                     addModifierData(stat, modifier.getItemData().get(stat).randomize(this), modUUID);
             }
     }
@@ -143,12 +143,13 @@ public class MMOItemBuilder {
      * @param stat Stat owning the data
      * @param data StatData to apply
      */
-    public void applyData(ItemStat stat, StatData data) {
+    public void applyData(ItemStat<?, ?> stat, StatData data) {
 
         // Is the data mergeable? Apply as External SH
         if (mmoitem.hasData(stat) && data instanceof Mergeable) {
 
-            ((Mergeable) mmoitem.getData(stat)).merge(data);
+            //noinspection unchecked
+            ((Mergeable<StatData>) mmoitem.getData(stat)).merge(data);
 
         } else {
 
@@ -163,7 +164,7 @@ public class MMOItemBuilder {
      * @param stat Stat owning the data
      * @param data StatData to apply
      */
-    public void addModifierData(@NotNull ItemStat stat, @NotNull StatData data, @NotNull UUID uuid) {
+    public void addModifierData(@NotNull ItemStat<?, ?> stat, @NotNull StatData data, @NotNull UUID uuid) {
         if (stat.getClearStatData() instanceof Mergeable)
             StatHistory.from(mmoitem, stat).registerModifierBonus(uuid, data);
         else

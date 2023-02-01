@@ -27,7 +27,7 @@ public class MMOItemTemplate extends PostLoadObject implements ItemReference {
 	private final int revId;
 
 	// base item data
-	private final Map<ItemStat, RandomStatData> base = new HashMap<>();
+	private final Map<ItemStat<?, ?>, RandomStatData<?>> base = new HashMap<>();
 
 	@NotNull private final Map<String, TemplateModifier> modifiers = new LinkedHashMap<>();
 	private final Set<TemplateOption> options = new HashSet<>();
@@ -99,8 +99,8 @@ public class MMOItemTemplate extends PostLoadObject implements ItemReference {
 				String id = key.toUpperCase().replace("-", "_");
 				Validate.isTrue(MMOItems.plugin.getStats().has(id), FriendlyFeedbackProvider.quickForConsole(FFPMMOItems.get(),"Could not find stat with ID '$i{0}$b'", id));
 
-				ItemStat stat = MMOItems.plugin.getStats().get(id);
-				RandomStatData data = stat.whenInitialized(config.get("base." + key));
+				ItemStat<?, ?> stat = MMOItems.plugin.getStats().get(id);
+				RandomStatData<?> data = stat.whenInitialized(config.get("base." + key));
 				if (data != null)
 					base.put(stat, data);
 
@@ -117,7 +117,7 @@ public class MMOItemTemplate extends PostLoadObject implements ItemReference {
 		ffp.sendTo(FriendlyFeedbackCategory.INFORMATION, MMOItems.getConsole());
 	}
 
-	public Map<ItemStat, RandomStatData> getBaseItemData() {
+	public Map<ItemStat<?, ?>, RandomStatData<?>> getBaseItemData() {
 		return base;
 	}
 
