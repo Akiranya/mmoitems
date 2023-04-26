@@ -42,11 +42,11 @@ public class ConfigManager implements Reloadable {
     private final Map<PotionEffectType, String> potionNames = new HashMap<>();
 
     // Cached config options
-    public boolean replaceMushroomDrops, worldGenEnabled, upgradeRequirementsCheck, keepSoulboundOnDeath, rerollOnItemUpdate, opStatsEnabled;
+    public boolean replaceMushroomDrops, worldGenEnabled, upgradeRequirementsCheck, keepSoulboundOnDeath, rerollOnItemUpdate, opStatsEnabled, disableRemovedItems;
     public String abilitySplitter;
     public double soulboundBaseDamage, soulboundPerLvlDamage, levelSpread;
     public NumericStatFormula defaultItemCapacity;
-    public ReforgeOptions revisionOptions, phatLootsOptions;
+    public ReforgeOptions revisionOptions, gemRevisionOptions, phatLootsOptions;
     public final List<String> opStats = new ArrayList<>();
 
     public ConfigManager() {
@@ -120,6 +120,7 @@ public class ConfigManager implements Reloadable {
             if (!messages.getConfig().contains(path))
                 messages.getConfig().set(path, message.getDefault());
 
+            message.setCurrent(messages.getConfig().getString(path));
         }
         messages.save();
 
@@ -173,6 +174,7 @@ public class ConfigManager implements Reloadable {
         keepSoulboundOnDeath = MMOItems.plugin.getConfig().getBoolean("soulbound.keep-on-death");
         rerollOnItemUpdate = MMOItems.plugin.getConfig().getBoolean("item-revision.reroll-when-updated");
         levelSpread = MMOItems.plugin.getConfig().getDouble("item-level-spread");
+        disableRemovedItems = MMOItems.plugin.getConfig().getBoolean("disable-removed-items");
 
         opStatsEnabled = MMOItems.plugin.getConfig().getBoolean("op-item-stats.enabled");
         opStats.clear();
@@ -181,8 +183,10 @@ public class ConfigManager implements Reloadable {
 
         ConfigurationSection keepData = MMOItems.plugin.getConfig().getConfigurationSection("item-revision.keep-data");
         ConfigurationSection phatLoots = MMOItems.plugin.getConfig().getConfigurationSection("item-revision.phat-loots");
+        ConfigurationSection gemKeepData = MMOItems.plugin.getConfig().getConfigurationSection("item-revision.keep-gem-data");
         ReforgeOptions.dropRestoredGems = MMOItems.plugin.getConfig().getBoolean("item-revision.drop-extra-gems", true);
         revisionOptions = keepData != null ? new ReforgeOptions(keepData) : new ReforgeOptions(false, false, false, false, false, false, false, true);
+        gemRevisionOptions = gemKeepData != null ? new ReforgeOptions(gemKeepData) : new ReforgeOptions(false, false, false, false, false, false, false, true);
         phatLootsOptions = phatLoots != null ? new ReforgeOptions(phatLoots) : new ReforgeOptions(false, false, false, false, false, false, false, true);
 
         List<String> exemptedPhatLoots = MMOItems.plugin.getConfig().getStringList("item-revision.disable-phat-loot");

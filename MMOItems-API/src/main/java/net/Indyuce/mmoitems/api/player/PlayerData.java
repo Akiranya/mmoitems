@@ -63,7 +63,7 @@ public class PlayerData {
 
     private PlayerData(@NotNull MMOPlayerData mmoData) {
         this.mmoData = mmoData;
-        rpgPlayer = MMOItems.plugin.getRPG().getInfo(this);
+        rpgPlayer = MMOItems.plugin.getMainRPG().getInfo(this);
         stats = new PlayerStats(this);
 
         load(new ConfigFile("/userdata", getUniqueId().toString()).getConfig());
@@ -287,6 +287,7 @@ public class PlayerData {
         if (setBonuses != null) {
             if (MMOItems.plugin.hasPermissions()) {
                 final Permission perms = MMOItems.plugin.getVault().getPermissions();
+                permissions.addAll(setBonuses.getPermissions());
                 for (String perm : setBonuses.getPermissions())
                     if (!perms.has(getPlayer(), perm))
                         perms.playerAdd(getPlayer(), perm);
@@ -304,7 +305,7 @@ public class PlayerData {
         stats.updateStats();
 
         // Update stats from external plugins
-        MMOItems.plugin.getRPG().refreshStats(this);
+        MMOItems.plugin.getRPGs().forEach(rpg -> rpg.refreshStats(this));
 
         // Actually update cached player inventory so the task doesn't infinitely loop
         inventory.helmet = getPlayer().getInventory().getHelmet();
@@ -442,6 +443,7 @@ public class PlayerData {
      * Called when the corresponding MMOPlayerData has already been initialized.
      */
     public static PlayerData load(@NotNull UUID player) {
+
         /*
          * Double check they are online, for some reason even if this is fired
          * from the join event the player can be offline if they left in the
@@ -459,7 +461,7 @@ public class PlayerData {
          * data of other rpg plugins
          */
         PlayerData playerData = data.get(player);
-        playerData.rpgPlayer = MMOItems.plugin.getRPG().getInfo(playerData);
+        playerData.rpgPlayer = MMOItems.plugin.getMainRPG().getInfo(playerData);
         return playerData;
     }
 

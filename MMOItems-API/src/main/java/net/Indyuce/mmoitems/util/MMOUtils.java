@@ -11,10 +11,7 @@ import io.lumine.mythic.lib.skill.trigger.TriggerType;
 import net.Indyuce.mmoitems.MMOItems;
 import net.Indyuce.mmoitems.api.Type;
 import org.apache.commons.codec.binary.Base64;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -33,9 +30,31 @@ import java.util.*;
 
 @SuppressWarnings("unused")
 public class MMOUtils {
-
     public MMOUtils() {
         throw new IllegalArgumentException("This class cannot be instantiated.");
+    }
+
+    public static boolean isColorable(Particle particle) {
+        return particle.getDataType() == Particle.DustOptions.class;
+    }
+
+    /**
+     * Should cancel interaction if one of the two cases:
+     * - the item type no longer exists
+     * - no template with the given (type, id) pair can be found
+     *
+     * @param item Target item
+     * @return If the item USED to exist, but no longer does
+     */
+    public static boolean hasBeenRemoved(@NotNull NBTItem item) {
+        if (!item.hasType()) return false;
+
+        final @Nullable String type = item.getType();
+        return MMOUtils.isNonEmpty(type) && (!Type.isValid(type) || !MMOItems.plugin.getTemplates().hasTemplate(Type.get(type), item.getString("MMOITEMS_ITEM_ID")));
+    }
+
+    public static boolean isNonEmpty(@Nullable String str) {
+        return str != null && !str.isEmpty();
     }
 
     /**
@@ -61,12 +80,11 @@ public class MMOUtils {
      * They are a piece of text stored as an NBTTag for instance. Items can
      * interact (in a certain way) only if the corresponding reference match.
      * <p>
-     * A null reference is considered just like a non-null reference.
-     * Any item can interact with an item with the universal reference 'all'
+     * Any item can interact with an item with the universal reference 'all'.
+     * A null/empty reference is considered like the universal reference.
      * <p>
-     * TODO
      * This is a simple symmetrical computation. Used for:
-     * - for item upgrading
+     * - for item upgrading TODO
      * - item repairing
      *
      * @param ref1      First reference
@@ -74,11 +92,7 @@ public class MMOUtils {
      * @return If items can interact
      */
     public static boolean checkReference(@Nullable String ref1, @Nullable String ref2) {
-        if (ref1 == null)
-            return ref2 == null || ref2.equals(UNIVERSAL_REFERENCE);
-        if (ref2 == null)
-            return ref1 == null || ref1.equals(UNIVERSAL_REFERENCE);
-        return ref1.equals(UNIVERSAL_REFERENCE) || ref2.equals(UNIVERSAL_REFERENCE) || ref1.equals(ref2);
+        return ref1 == null || ref1.isEmpty() || ref2 == null || ref2.isEmpty() || ref1.equals(UNIVERSAL_REFERENCE) || ref2.equals(UNIVERSAL_REFERENCE) || ref1.equals(ref2);
     }
 
     /**

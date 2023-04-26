@@ -7,6 +7,7 @@ import com.archyx.aureliumskills.data.PlayerDataLoadEvent;
 import com.archyx.aureliumskills.skills.Skill;
 import com.archyx.aureliumskills.skills.Skills;
 import com.archyx.aureliumskills.stats.Stats;
+import io.lumine.mythic.lib.UtilityMethods;
 import io.lumine.mythic.lib.api.item.NBTItem;
 import io.lumine.mythic.lib.version.VersionMaterial;
 import net.Indyuce.mmoitems.MMOItems;
@@ -22,21 +23,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class AureliumSkillsHook implements RPGHandler, Listener {
     private final AureliumSkills aSkills;
 
-    private static final ItemStat WISDOM = new DoubleStat("WISDOM", Material.BOOK,
-            "Additional Wisdom",
-            new String[]{"Additional wisdom (AureliumSkills)"},
-            new String[]{"!miscellaneous", "!block", "all"});
+    private final Map<Stats, ItemStat> statExtra = new HashMap<>();
 
     public AureliumSkillsHook() {
         aSkills = (AureliumSkills) Bukkit.getPluginManager().getPlugin("AureliumSkills");
 
-        // Register wisdom for the max mana stat
-        MMOItems.plugin.getStats().register(WISDOM);
+        for (Stats stat : Stats.values()) {
+            final String statName = UtilityMethods.caseOnWords(stat.name().toLowerCase());
+            final ItemStat miStat = new DoubleStat("ADDITIONAL_" + stat.name(), Material.BOOK,
+                    "Additional " + statName,
+                    new String[]{"Additional " + statName + " (AureliumSkills)"},
+                    new String[]{"!miscellaneous", "!block", "all"});
+
+            statExtra.put(stat, miStat);
+            MMOItems.plugin.getStats().register(miStat);
+        }
 
         // Register stat for required professions
         for (Skills skill : Skills.values())
@@ -50,9 +58,18 @@ public class AureliumSkillsHook implements RPGHandler, Listener {
             PlayerData.get(player).getInventory().scheduleUpdate();
     }
 
+    /**
+     * AureliumSkills stores modifiers using ONE hash map for every stat
+     * unlike MythicLib which has several stat instances. Therefore, a
+     * valid key for a stat modifier is "mmoitems_<stat_name>".
+     * <p>
+     * Be careful, ASkills permanently stores modifiers unlike ML
+     */
+    private static final String MODIFIER_KEY_PREFIX = "mmoitems_";
+
     @Override
     public void refreshStats(PlayerData data) {
-        AureliumAPI.addStatModifier(data.getPlayer(), "mmoitems", Stats.WISDOM, data.getStats().getStat(WISDOM));
+        statExtra.forEach((stat, miStat) -> AureliumAPI.addStatModifier(data.getPlayer(), MODIFIER_KEY_PREFIX + stat.name(), stat, data.getStats().getStat(miStat)));
     }
 
     @Override
@@ -123,7 +140,7 @@ public class AureliumSkillsHook implements RPGHandler, Listener {
 
         public RequiredProfessionStat(Skills skill) {
             super(skill.name(), VersionMaterial.EXPERIENCE_BOTTLE.toMaterial(), skill.getDisplayName(Locale.getDefault()),
-                    new String[]{"Amount of " + skill.getDisplayName(Locale.getDefault()) + " levels the", "player needs to use the item."});
+                    new String[]{"Amount of " + skill.getDisplayName(Locale.getDefault()) + " levels the", "player needs to use the item.", "(AureliumSkills)"});
 
             this.skill = aSkills.getSkillRegistry().getSkill(skill.name());
         }
@@ -131,8 +148,8 @@ public class AureliumSkillsHook implements RPGHandler, Listener {
         @Override
         public boolean canUse(RPGPlayer player, NBTItem item, boolean message) {
 
-            int skillLevel = player instanceof AureliumSkillsPlayer ? ((AureliumSkillsPlayer) player).info.getSkillLevel(skill) : 0;
-            int required = item.getInteger("MMOITEMS_REQUIRED_" + skill.name());
+            final int skillLevel = AureliumAPI.getSkillLevel(player.getPlayer(), skill);
+            final int required = item.getInteger("MMOITEMS_REQUIRED_" + skill.name());
 
             if (skillLevel < required && !player.getPlayer().hasPermission("mmoitems.bypass.level")) {
                 if (message) {
