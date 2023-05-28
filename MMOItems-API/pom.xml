@@ -349,6 +349,20 @@
             <version>2.0.0-b709</version>
             <scope>provided</scope>
         </dependency>
+        <!-- AdventureLevel -->
+        <dependency>
+            <groupId>cc.mewcraft.adventurelevel</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- AdventureLevel -->
+        <dependency>
+            <groupId>cc.mewcraft.adventurelevel</groupId>
+            <artifactId>hooks</artifactId>
+            <version>1.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

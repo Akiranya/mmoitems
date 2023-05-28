@@ -1,5 +1,6 @@
 package net.Indyuce.mmoitems.comp.rpg;
 
+import cc.mewcraft.adventurelevel.hooks.mmoitems.AdventureLevelHook;
 import net.Indyuce.mmoitems.api.player.PlayerData;
 import net.Indyuce.mmoitems.api.player.RPGPlayer;
 import net.Indyuce.mmoitems.comp.mmocore.MMOCoreHook;
@@ -40,7 +41,8 @@ public interface RPGHandler {
         MCRPG("McRPG", McRPGHook.class),
         SKILLS("Skills", SkillsHook.class),
         AURELIUM_SKILLS("AureliumSkills", AureliumSkillsHook.class),
-        SKILLSPRO("SkillsPro", SkillsProHook.class);
+        SKILLSPRO("SkillsPro", SkillsProHook.class),
+        ADVENTURELEVEL("AdventureLevel", AdventureLevelHook.class);
 
         private final Class<? extends RPGHandler> pluginClass;
         private final String name;
