@@ -176,7 +176,6 @@ public class MMOItems extends JavaPlugin {
         blockManager = new BlockManager();
         statManager.reload(false);
 
-
         PluginUtils.hookDependencyIfPresent("Vault", u -> vaultSupport = new VaultSupport());
 
         getServer().getScheduler().runTask(this, () -> {
