@@ -24,6 +24,12 @@
 
     <!-- Repositories -->
     <repositories>
+        <!-- Mewcraft start -->
+        <repository>
+            <id>mewcraft-releases</id>
+            <url>file://${user.home}/MewcraftRepository</url>
+        </repository>
+        <!-- Mewcraft end -->
         <repository>
             <id>phoenix</id>
             <url>https://nexus.phoenixdevt.fr/repository/maven-public/</url>
@@ -66,7 +72,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version> <!-- Mewcraft -->
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -79,7 +85,8 @@
             This prevents MythicLib from including old versions of previous
             classes when building the same version again
             -->
-            <plugin>
+            <!-- Mewcraft: fix bug where deploy of  MMOItems-API only produces source jar -->
+            <!--<plugin>
                 <artifactId>maven-clean-plugin</artifactId>
                 <version>3.1.0</version>
                 <executions>
@@ -91,7 +98,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 </project>
